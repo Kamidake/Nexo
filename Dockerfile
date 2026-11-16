@@ -25,5 +25,5 @@ ENV NODE_ENV=production
 
 EXPOSE 5000
 
-# Run the backend workspace package directly using pnpm from root
-CMD ["pnpm", "--filter", "backend", "exec", "node", "dist/index.js"]
+# Stay at root (/app) and run the backend using pnpm filter
+CMD ["pnpm", "--filter", "backend", "run", "start"]
