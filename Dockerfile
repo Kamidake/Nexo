@@ -1,4 +1,4 @@
-# Stage 1: Clone and build from GitHub source
+# Stage 1: Build
 FROM node:22-alpine AS builder
 
 RUN apk add --no-cache git python3 make g++
@@ -17,7 +17,7 @@ WORKDIR /app
 
 RUN npm install -g pnpm
 
-# Copy built files and node_modules from builder
+# Copy the entire workspace from builder
 COPY --from=builder /app /app
 
 ENV PORT=5000
@@ -25,6 +25,5 @@ ENV NODE_ENV=production
 
 EXPOSE 5000
 
-# Directly point to the compiled backend entrypoint or run it via workspace scope without a custom start script
-WORKDIR /app/backend
-CMD ["node", "dist/index.js"]
+# Run the backend workspace package directly using pnpm from root
+CMD ["pnpm", "--filter", "backend", "exec", "node", "dist/index.js"]
