@@ -6,6 +6,9 @@ RUN apk add --no-cache git python3 make g++
 WORKDIR /app
 RUN git clone --depth 1 https://github.com/joaosavi/nexotv.git .
 
+# Install pnpm globally so the build scripts can run
+RUN npm install -g pnpm
+
 RUN npm ci || npm install
 RUN npm run build
 
@@ -14,7 +17,10 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy built artifacts and dependencies
+# Install pnpm in the runtime stage if needed, or just copy built artifacts
+RUN npm install -g pnpm
+
+# Copy built artifacts and dependencies from builder
 COPY --from=builder /app .
 
 # Miget injects PORT=5000 automatically, setting default here as fallback
