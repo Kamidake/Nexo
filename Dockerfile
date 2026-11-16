@@ -10,6 +10,10 @@ RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile || pnpm install
 RUN pnpm build
 
+# DEBUG: Print package.json and list built files in build logs
+RUN echo "=== BACKEND PACKAGE.JSON ===" && cat backend/package.json
+RUN echo "=== BUILD OUTPUT ===" && find backend -maxdepth 3
+
 # Stage 2: Production runtime
 FROM node:22-alpine
 
@@ -25,5 +29,7 @@ ENV NODE_ENV=production
 
 EXPOSE 5000
 
-# Stay at root (/app) and run the backend using pnpm filter
-CMD ["pnpm", "--filter", "backend", "run", "start"]
+WORKDIR /app/backend
+
+# Fallback: run node on standard entrypoint or inspect logs after pushing
+CMD ["node", "dist/index.js"]
